@@ -105,6 +105,37 @@
 /* Frees a block of memory with length "size" which starts at "ad" address.
  * If needed, can be assumed to be a previous allocated block
  */
+
+	void MergeAdjacent(T_handler* handler) {
+
+			T_handler ptr, aux;
+
+			if (*handler != NULL) {
+
+				ptr = *handler;
+
+				while(ptr->next != NULL) {
+
+					if(ptr->end+1 == ptr->next->start) {
+
+						ptr->end = ptr->next->end;
+						aux = ptr->next->next;
+						free(ptr->next);
+						ptr->next = aux;
+
+					} else {
+
+						ptr = ptr->next;
+
+					}
+
+				}
+
+			}
+
+		}
+
+
 	void Deallocate(T_handler* handler, unsigned size ,unsigned ad) {
 
 		T_handler aux, prev, ptr;
@@ -141,35 +172,6 @@
 
 	}
 
-	void MergeAdjacent(T_handler* handler) {
-
-		T_handler ptr, aux;
-
-		if (*handler != NULL) {
-
-			ptr = *handler;
-
-			while(ptr->next != NULL) {
-
-				if(ptr->end+1 == ptr->next->start) {
-
-					ptr->end = ptr->next->end;
-					aux = ptr->next->next;
-					free(ptr->next);
-					ptr->next = aux;
-
-				} else {
-
-					ptr = ptr->next;
-
-				}
-
-			}
-
-		}
-
-	}
-
 /* Shows the current status of the memory */
 	void Show (T_handler handler) {
 
@@ -179,6 +181,8 @@
 			printf("Free block: start = %d, end = %d\n", handler->start, handler->end);
 
 		}
+
+		fflush(stdout);
 
 	}
 
