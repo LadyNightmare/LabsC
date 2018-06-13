@@ -36,11 +36,11 @@
 
 		T_handler aux;
 
-		while((*handler)->next != NULL) {
+		while((*handler) != NULL) {
 
 			aux = *handler;
 
-			handler = (*handler)->next;
+			*handler = (*handler)->next;
 
 			free(aux);
 
@@ -53,7 +53,52 @@
  */
 	void Allocate(T_handler* handler, unsigned size, unsigned* ad, unsigned* ok) {
 
+		int prev_size, final_size;
 
+		T_handler prev, ptr, aux;
+
+		*ok = 0;
+		prev = NULL;
+		ptr = *handler;
+
+		while(!(*ok) && ptr != NULL) {
+
+			prev_size = ptr->end-ptr->start;
+			if (prev_size >= size) {
+
+				*ad = ptr->start;
+				*ok = 1;
+
+				final_size = prev_size - size;
+
+				if(final_size) {
+
+					ptr->start = ptr->start+size;
+
+				} else {
+
+					if (prev == NULL) {
+
+						aux = ptr->next;
+						free(*handler);
+						*handler = aux;
+
+					} else {
+
+						prev->next = ptr->next;
+
+					}
+
+				}
+
+			} else {
+
+				prev = ptr;
+				ptr= ptr->next;
+
+			}
+
+		}
 
 	}
 
@@ -98,7 +143,30 @@
 
 	void MergeAdjacent(T_handler* handler) {
 
+		T_handler ptr, aux;
 
+		if (*handler != NULL) {
+
+			ptr = *handler;
+
+			while(ptr->next != NULL) {
+
+				if(ptr->end+1 == ptr->next->start) {
+
+					ptr->end = ptr->next->end;
+					aux = ptr->next->next;
+					free(ptr->next);
+					ptr->next = aux;
+
+				} else {
+
+					ptr = ptr->next;
+
+				}
+
+			}
+
+		}
 
 	}
 
@@ -106,7 +174,7 @@
 	void Show (T_handler handler) {
 
 		printf("Memory state:\n");
-		while((*handler) != NULL) {
+		while(handler != NULL) {
 
 			printf("Free block: start = %d, end = %d\n", handler->start, handler->end);
 
